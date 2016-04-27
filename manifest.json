@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+
+  "name": "Faker Form",
+  "description": "Fill in common form fields with data from the Faker library",
+  "version": "1.0",
+
+  "permissions": [
+    "activeTab"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["faker.min.js"]
+    }
+  ],
+  "browser_action": {
+    "default_title": "Fake form data"
+  }
+}
