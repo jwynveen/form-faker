@@ -1,4 +1,5 @@
 console.log('form-faker: faking data...');
+const dictionary = getDictionary();
 var inputs = document.getElementsByTagName('input');
 
 for (var i = 0; i < inputs.length; i++) {
@@ -8,18 +9,19 @@ for (var i = 0; i < inputs.length; i++) {
   }
 
   var name = input.name.toLowerCase();
-  switch (name) {
-    case 'firstname':
+  var mapping = dictionary.get(name);
+  switch (mapping) {
+    case 'firstName':
       input.value = faker.name.firstName();
       break;
-    case 'lastname':
+    case 'lastName':
       input.value = faker.name.firstName();
       break;
-    case 'birthdate':
+    case 'date-past':
       var date = faker.date.past(50);
       input.value = date.toLocaleDateString();
       break;
-    case 'mrn':
+    case 'account':
       input.value = faker.finance.account();
       break;
     default:
@@ -31,3 +33,22 @@ for (var i = 0; i < inputs.length; i++) {
 }
 
 console.log('form-faker: Done!');
+
+function getDictionary() {
+  return new Map([
+    // firstName
+    ['firstname', 'firstName'],
+    ['first_name', 'firstName'],
+    ['first-name', 'firstName'],
+    ['fname', 'firstName'],
+    // lastName
+    ['lastname', 'lastName'],
+    ['last_name', 'lastName'],
+    ['last-name', 'lastName'],
+    ['lname', 'lastName'],
+    // date-past
+    ['birthdate', 'date-past'],
+    // account
+    ['mrn', 'account'],
+  ]);
+}

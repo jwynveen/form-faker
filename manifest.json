@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
 
-  "name": "Faker Form",
+  "name": "Form Faker",
   "description": "Fill in common form fields with data from the Faker library",
-  "version": "0.1",
+  "version": "0.2",
 
   "permissions": [
     "activeTab"
