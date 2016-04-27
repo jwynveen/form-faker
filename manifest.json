@@ -3,7 +3,7 @@
 
   "name": "Faker Form",
   "description": "Fill in common form fields with data from the Faker library",
-  "version": "1.0",
+  "version": "0.1",
 
   "permissions": [
     "activeTab"
