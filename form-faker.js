@@ -21,6 +21,9 @@ for (var i = 0; i < inputs.length; i++) {
       var date = faker.date.past(50);
       input.value = date.toLocaleDateString();
       break;
+    case 'email':
+      input.value = faker.internet.email();
+      break;
     case 'account':
       input.value = faker.finance.account();
       break;
@@ -46,6 +49,11 @@ function getDictionary() {
     ['last_name', 'lastName'],
     ['last-name', 'lastName'],
     ['lname', 'lastName'],
+    // email
+    ['email', 'email'],
+    ['emailaddress', 'email'],
+    ['email_address', 'email'],
+    ['email-address', 'email'],
     // date-past
     ['birthdate', 'date-past'],
     // account
