@@ -82,22 +82,22 @@ function getInputType(input, dictionary) {
 
 function getDictionary() {
   return new Map([
-    // firstName
+    // First Name
     ['firstname', 'firstName'],
     ['first_name', 'firstName'],
     ['first-name', 'firstName'],
     ['fname', 'firstName'],
-    // lastName
+    // Last Name
     ['lastname', 'lastName'],
     ['last_name', 'lastName'],
     ['last-name', 'lastName'],
     ['lname', 'lastName'],
-    // email
+    // Email
     ['email', 'email'],
     ['emailaddress', 'email'],
     ['email_address', 'email'],
     ['email-address', 'email'],
-    // phone
+    // Phone
     ['phone', 'phone'],
     ['ph', 'phone'],
     ['cellphone', 'phone'],
@@ -147,9 +147,9 @@ function getDictionary() {
     ['postcode', 'zipCode'],
     ['post-code', 'zipCode'],
     ['post_code', 'zipCode'],
-    // date-past
+    // Dates (in the past, format: MM/DD/YYYY)
     ['birthdate', 'date-past'],
-    // account
+    // General Account Number (8-digit number)
     ['mrn', 'account'],
   ]);
 }
