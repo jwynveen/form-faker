@@ -1,6 +1,6 @@
 function processForm() {
   console.log('form-faker: faking data...');
-// debugger;
+  // debugger;
   const dictionary = getDictionary();
   var inputs = document.getElementsByTagName('input');
 
@@ -10,8 +10,7 @@ function processForm() {
       continue;
     }
 
-    var name = input.name.toLowerCase();
-    var mapping = dictionary.get(name);
+    const mapping = getInputType(input, dictionary);
     switch (mapping) {
       case 'firstName':
         input.value = faker.name.firstName();
@@ -64,6 +63,21 @@ function processForm() {
   }
 
   console.log('form-faker: Done!');
+}
+
+function getInputType(input, dictionary) {
+  const name = input.name.toLowerCase();
+  let mapping = dictionary.get(name);
+  if (!mapping) {
+    // check each class to see if it matches one of the mappings
+    for (const className of input.classList) {
+      mapping = dictionary.get(className);
+      if (mapping) {
+        break;
+      }
+    }
+  }
+  return mapping;
 }
 
 function getDictionary() {
