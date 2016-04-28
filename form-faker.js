@@ -24,6 +24,29 @@ for (var i = 0; i < inputs.length; i++) {
     case 'phone':
       input.value = faker.phone.phoneNumber('(###) ###-####');
       break;
+    // Address
+    case 'address1':
+      input.value = faker.address.streetAddress();
+      break;
+    case 'address2':
+      input.value = faker.address.secondaryAddress();
+      break;
+    case 'city':
+      input.value = faker.address.city();
+      break;
+    case 'country':
+      input.value = 'United States'; // faker.address.country();
+      break;
+    case 'county':
+      input.value = faker.address.county();
+      break;
+    case 'state':
+      input.value = faker.address.state();
+      break;
+    case 'zipCode':
+      input.value = faker.address.zipCode();
+      break;
+    // Date
     case 'date-past':
       var date = faker.date.past(50);
       input.value = date.toLocaleDateString();
@@ -85,6 +108,29 @@ function getDictionary() {
     ['hmph', 'phone'],
     ['hm_ph', 'phone'],
     ['hm-ph', 'phone'],
+    // Address
+    ['address', 'address1'],
+    ['address1', 'address1'],
+    ['addr', 'address1'],
+    ['addr1', 'address1'],
+    ['address2', 'address2'],
+    ['addr2', 'address2'],
+    ['city', 'city'],
+    ['country', 'country'],
+    ['cntry', 'country'],
+    ['county', 'county'],
+    ['state', 'state'],
+    ['st', 'state'],
+    ['zipcode', 'zipCode'],
+    ['zip', 'zipCode'],
+    ['zip-code', 'zipCode'],
+    ['zip_code', 'zipCode'],
+    ['postalcode', 'zipCode'],
+    ['postal-code', 'zipCode'],
+    ['postal_code', 'zipCode'],
+    ['postcode', 'zipCode'],
+    ['post-code', 'zipCode'],
+    ['post_code', 'zipCode'],
     // date-past
     ['birthdate', 'date-past'],
     // account
