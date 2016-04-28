@@ -1,68 +1,70 @@
-console.log('form-faker: faking data...');
+function processForm() {
+  console.log('form-faker: faking data...');
 // debugger;
-const dictionary = getDictionary();
-var inputs = document.getElementsByTagName('input');
+  const dictionary = getDictionary();
+  var inputs = document.getElementsByTagName('input');
 
-for (var i = 0; i < inputs.length; i++) {
-  var input = inputs[i];
-  if (input.type.toLowerCase() !== 'text' || input.value) {
-    continue;
+  for (var i = 0; i < inputs.length; i++) {
+    var input = inputs[i];
+    if (input.type.toLowerCase() !== 'text' || input.value) {
+      continue;
+    }
+
+    var name = input.name.toLowerCase();
+    var mapping = dictionary.get(name);
+    switch (mapping) {
+      case 'firstName':
+        input.value = faker.name.firstName();
+        break;
+      case 'lastName':
+        input.value = faker.name.firstName();
+        break;
+      case 'email':
+        input.value = faker.internet.email();
+        break;
+      case 'phone':
+        input.value = faker.phone.phoneNumber('(###) ###-####');
+        break;
+      // Address
+      case 'address1':
+        input.value = faker.address.streetAddress();
+        break;
+      case 'address2':
+        input.value = faker.address.secondaryAddress();
+        break;
+      case 'city':
+        input.value = faker.address.city();
+        break;
+      case 'country':
+        input.value = 'United States'; // faker.address.country();
+        break;
+      case 'county':
+        input.value = faker.address.county();
+        break;
+      case 'state':
+        input.value = faker.address.state();
+        break;
+      case 'zipCode':
+        input.value = faker.address.zipCode();
+        break;
+      // Date
+      case 'date-past':
+        var date = faker.date.past(50);
+        input.value = date.toLocaleDateString();
+        break;
+      case 'account':
+        input.value = faker.finance.account();
+        break;
+      default:
+        if (input.attributes.required) {
+          input.value = faker.random.word();
+        }
+        break;
+    }
   }
 
-  var name = input.name.toLowerCase();
-  var mapping = dictionary.get(name);
-  switch (mapping) {
-    case 'firstName':
-      input.value = faker.name.firstName();
-      break;
-    case 'lastName':
-      input.value = faker.name.firstName();
-      break;
-    case 'email':
-      input.value = faker.internet.email();
-      break;
-    case 'phone':
-      input.value = faker.phone.phoneNumber('(###) ###-####');
-      break;
-    // Address
-    case 'address1':
-      input.value = faker.address.streetAddress();
-      break;
-    case 'address2':
-      input.value = faker.address.secondaryAddress();
-      break;
-    case 'city':
-      input.value = faker.address.city();
-      break;
-    case 'country':
-      input.value = 'United States'; // faker.address.country();
-      break;
-    case 'county':
-      input.value = faker.address.county();
-      break;
-    case 'state':
-      input.value = faker.address.state();
-      break;
-    case 'zipCode':
-      input.value = faker.address.zipCode();
-      break;
-    // Date
-    case 'date-past':
-      var date = faker.date.past(50);
-      input.value = date.toLocaleDateString();
-      break;
-    case 'account':
-      input.value = faker.finance.account();
-      break;
-    default:
-      if (input.attributes.required) {
-        input.value = faker.random.word();
-      }
-      break;
-  }
+  console.log('form-faker: Done!');
 }
-
-console.log('form-faker: Done!');
 
 function getDictionary() {
   return new Map([
@@ -137,3 +139,5 @@ function getDictionary() {
     ['mrn', 'account'],
   ]);
 }
+
+processForm();
