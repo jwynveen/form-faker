@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Form Faker Options</title>
+  <link href="node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+  <link href="options.css" rel="stylesheet" type="text/css"/>
+  <style>
+    body { padding: 10px; }
+  </style>
+</head>
+
+<body>
+
+  <div class="row">
+    <label>Field Name</label>
+    <label>Data Type</label>
+  </div>
+  <div id="mapping-container"></div>
+  <button id="add-mapping">Add</button>
+
+  <div id="status"></div>
+  <div id="actions">
+    <button id="save">Save</button>
+  </div>
+
+  <script id="mapping-template" type="text/x-handlebars-template">
+    {{#each this}}
+    <div class="row">
+      <input type="text" name="mappings[{{@index}}].key" placeholder="Field Name" value="{{key}}"/>
+      <select name="mappings[{{@index}}].type">
+        {{#select type}}
+        <optgroup label="Name">
+          <option value="firstName">First Name</option>
+          <option value="lastName">Last Name</option>
+        </optgroup>
+        <option value="ignore">Ignore</option>
+        {{/select}}
+      </select>
+      <button class="delete" value="{{key}}">
+        <i class="fa fa-trash"></i>
+      </button>
+    </div>
+    {{/each}}
+  </script>
+  <script src="node_modules/handlebars/dist/handlebars.min.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

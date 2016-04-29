@@ -1,0 +1,28 @@
+{
+  "name": "form-faker",
+  "version": "1.0.0",
+  "description": "Chrome extension to fill in common form fields with data from the faker library",
+  "main": "form-faker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jwynveen/form-faker.git"
+  },
+  "keywords": [
+    "faker",
+    "chrome"
+  ],
+  "author": "jwynveen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jwynveen/form-faker/issues"
+  },
+  "homepage": "https://github.com/jwynveen/form-faker#readme",
+  "dependencies": {
+    "faker": "^3.1.0",
+    "font-awesome": "^4.6.1",
+    "handlebars": "^4.0.5"
+  }
+}
