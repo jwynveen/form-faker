@@ -1,6 +1,5 @@
-function processForm() {
+function processForm(userMappings) {
   console.log('form-faker: faking data...');
-  // debugger;
   const dictionary = getDictionary();
   var inputs = document.getElementsByTagName('input');
 
@@ -10,8 +9,16 @@ function processForm() {
       continue;
     }
 
-    const mapping = getInputType(input, dictionary);
+    let mapping;
+    if (userMappings) {
+      mapping = getInputType(input, userMappings);
+    }
+    if (!mapping) {
+      mapping = getInputType(input, dictionary);
+    }
     switch (mapping) {
+      case 'ignore':
+        break;
       case 'firstName':
         input.value = faker.name.firstName();
         break;
@@ -154,4 +161,10 @@ function getDictionary() {
   ]);
 }
 
-processForm();
+chrome.storage.sync.get({
+  mappings: []
+}, function(items) {
+  debugger;
+  const mapContent = items.mappings.map(mapping => [mapping.key, mapping.type]);
+  processForm(new Map(mapContent));
+});
