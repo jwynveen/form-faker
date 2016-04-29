@@ -1,10 +1,33 @@
+const mappingRegex = /mappings\[(\d*)\].(.*)/;
+var mappings = [];
+
 // Saves options to chrome.storage.sync.
 function save_options() {
-  var color = document.getElementById('color').value;
-  var likesColor = document.getElementById('like').checked;
+  const elements = document.querySelectorAll('input, select');
+  const data = [];
+  for (let i = 0; i < elements.length; i++) {
+    if (!elements[i].value) {
+      continue;
+    }
+    const name = elements[i].name;
+    let match;
+    if ((match = mappingRegex.exec(name)) !== null) {
+      const idx = match[1];
+      const propName = match[2];
+      if (!data[idx]) {
+        data[idx] = {};
+      }
+      let value = elements[i].value;
+      if (propName === 'key') {
+        value = value.toLowerCase();
+      }
+      data[idx][propName] = value;
+    }
+  }
+
+  mappings = data.filter(item => item.key && item.type);
   chrome.storage.sync.set({
-    favoriteColor: color,
-    likesColor: likesColor
+    mappings: mappings // only save if both key and type are set
   }, function() {
     // Update status to let user know options were saved.
     var status = document.getElementById('status');
@@ -12,19 +35,18 @@ function save_options() {
     setTimeout(function() {
       status.textContent = '';
     }, 750);
+    loadMappings();
   });
 }
 
 // Restores select box and checkbox state using the preferences
 // stored in chrome.storage.
 function restore_options() {
-  // Use default value color = 'red' and likesColor = true.
   chrome.storage.sync.get({
-    favoriteColor: 'red',
-    likesColor: true
+    mappings: [{}]
   }, function(items) {
-    document.getElementById('color').value = items.favoriteColor;
-    document.getElementById('like').checked = items.likesColor;
+    mappings = items.mappings;
+    loadMappings();
   });
 }
 
@@ -35,16 +57,10 @@ Handlebars.registerHelper('select', function(selected, options) {
     new RegExp(' value=\"' + selected + '\"'),
     '$& selected="selected"');
 });
-var mappings = [
-  {
-    key: 'testKey',
-    type: 'lastName'
-  }, {
-    key: 'testKey2',
-    type: 'ignore'
-  }
-];
 function loadMappings() {
+  if (!mappings.length) {
+    mappings.push({});
+  }
   document.getElementById('mapping-container').innerHTML = template(mappings);
 
   var buttons = document.getElementsByClassName('delete');
@@ -57,11 +73,10 @@ function addMapping() {
   loadMappings();
 }
 function deleteMapping() {
-  mappings = mappings.filter(mapping => mapping.key !== this.value);
+  mappings.splice(this.value, 1);
   loadMappings();
 }
 
-loadMappings();
 document.addEventListener('DOMContentLoaded', restore_options);
 document.getElementById('save').addEventListener('click', save_options);
 document.getElementById('add-mapping').addEventListener('click', addMapping);

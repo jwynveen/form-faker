@@ -11,6 +11,7 @@
 
 <body>
 
+  <h1>Custom Field Mapping</h1>
   <div class="row">
     <label>Field Name</label>
     <label>Data Type</label>
@@ -29,6 +30,7 @@
       <input type="text" name="mappings[{{@index}}].key" placeholder="Field Name" value="{{key}}"/>
       <select name="mappings[{{@index}}].type">
         {{#select type}}
+        <option value="">Select Type</option>
         <optgroup label="Name">
           <option value="firstName">First Name</option>
           <option value="lastName">Last Name</option>
@@ -36,7 +38,7 @@
         <option value="ignore">Ignore</option>
         {{/select}}
       </select>
-      <button class="delete" value="{{key}}">
+      <button class="delete" value="{{@index}}">
         <i class="fa fa-trash"></i>
       </button>
     </div>
