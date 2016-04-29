@@ -3,6 +3,22 @@ var mappings = [];
 
 // Saves options to chrome.storage.sync.
 function save_options() {
+  updateMappingsFromFormData();
+
+  chrome.storage.sync.set({
+    mappings: mappings // only save if both key and type are set
+  }, function() {
+    // Update status to let user know options were saved.
+    var status = document.getElementById('status');
+    status.textContent = 'Options saved.';
+    setTimeout(function() {
+      status.textContent = '';
+    }, 750);
+    loadMappings();
+  });
+}
+
+function updateMappingsFromFormData() {
   const elements = document.querySelectorAll('input, select');
   const data = [];
   for (let i = 0; i < elements.length; i++) {
@@ -26,17 +42,6 @@ function save_options() {
   }
 
   mappings = data.filter(item => item.key && item.type);
-  chrome.storage.sync.set({
-    mappings: mappings // only save if both key and type are set
-  }, function() {
-    // Update status to let user know options were saved.
-    var status = document.getElementById('status');
-    status.textContent = 'Options saved.';
-    setTimeout(function() {
-      status.textContent = '';
-    }, 750);
-    loadMappings();
-  });
 }
 
 // Restores select box and checkbox state using the preferences
@@ -69,6 +74,7 @@ function loadMappings() {
   }
 }
 function addMapping() {
+  updateMappingsFromFormData();
   mappings.push({});
   loadMappings();
 }

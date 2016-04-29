@@ -23,7 +23,7 @@ function processForm(userMappings) {
         input.value = faker.name.firstName();
         break;
       case 'lastName':
-        input.value = faker.name.firstName();
+        input.value = faker.name.lastName();
         break;
       case 'email':
         input.value = faker.internet.email();
@@ -48,7 +48,7 @@ function processForm(userMappings) {
         input.value = faker.address.county();
         break;
       case 'state':
-        input.value = faker.address.state();
+        input.value = faker.address.stateAbbr();
         break;
       case 'zipCode':
         input.value = faker.address.zipCode();
@@ -164,7 +164,6 @@ function getDictionary() {
 chrome.storage.sync.get({
   mappings: []
 }, function(items) {
-  debugger;
   const mapContent = items.mappings.map(mapping => [mapping.key, mapping.type]);
   processForm(new Map(mapContent));
 });

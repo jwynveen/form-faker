@@ -31,9 +31,22 @@
       <select name="mappings[{{@index}}].type">
         {{#select type}}
         <option value="">Select Type</option>
-        <optgroup label="Name">
+        <optgroup label="General">
           <option value="firstName">First Name</option>
           <option value="lastName">Last Name</option>
+          <option value="email">Email</option>
+          <option value="phone">Phone (###) ###-####</option>
+          <option value="date-past">Date (past, MM/DD/YYYY)</option>
+          <option value="account">8-Digit #</option>
+        </optgroup>
+        <optgroup label="Address">
+          <option value="address1">Address 1</option>
+          <option value="address2">Address 2</option>
+          <option value="city">City</option>
+          <option value="country">Country (Always United States)</option>
+          <option value="county">County</option>
+          <option value="state">State</option>
+          <option value="zipCode">ZIP Code</option>
         </optgroup>
         <option value="ignore">Ignore</option>
         {{/select}}
