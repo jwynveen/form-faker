@@ -1,0 +1,32 @@
+.row label {
+  display: inline-block;
+  font-weight: bold;
+}
+.row label,
+.row input,
+.row select {
+  width: 45%;
+}
+
+.row .delete {
+  min-width: initial;
+  padding-left: 7px;
+  padding-right: 7px;
+  color: #AF0000;
+}
+
+#add-mapping {
+  background: #2BB52B;
+  text-shadow: none;
+  color: #fff;
+}
+
+#actions {
+  margin-top: 15px;
+  text-align: right;
+}
+#save {
+  background: #4444D8;
+  text-shadow: none;
+  color: #fff;
+}
