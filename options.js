@@ -62,21 +62,28 @@ Handlebars.registerHelper('select', function(selected, options) {
     new RegExp(' value=\"' + selected + '\"'),
     '$& selected="selected"');
 });
-function loadMappings() {
+function loadMappings(focus) {
   if (!mappings.length) {
     mappings.push({});
   }
-  document.getElementById('mapping-container').innerHTML = template(mappings);
+  var container = document.getElementById('mapping-container');
+  container.innerHTML = template(mappings);
 
   var buttons = document.getElementsByClassName('delete');
   for (i = 0; i < buttons.length; i++) {
     buttons[i].addEventListener('click', deleteMapping);
   }
+
+  if (focus) {
+    // Give focus to last input
+    const inputs = container.getElementsByTagName('input');
+    inputs[inputs.length - 1].focus();
+  }
 }
 function addMapping() {
   updateMappingsFromFormData();
   mappings.push({});
-  loadMappings();
+  loadMappings(true);
 }
 function deleteMapping() {
   mappings.splice(this.value, 1);
