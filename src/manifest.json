@@ -24,7 +24,7 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["node_modules/faker/build/build/faker.min.js"]
+      "js": ["lib/faker.min.js"]
     }
   ],
   "browser_action": {

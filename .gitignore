@@ -25,6 +25,8 @@ build/Release
 
 # Dependency directory
 node_modules
+src/lib
+src/fonts
 
 # Optional npm cache directory
 .npm
