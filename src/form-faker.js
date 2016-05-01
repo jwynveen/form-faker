@@ -16,7 +16,6 @@ function processForm(userMappings) {
     if (!mapping) {
       mapping = getInputType(input, dictionary);
     }
-    debugger;
     switch (mapping) {
       case 'ignore':
         break;
