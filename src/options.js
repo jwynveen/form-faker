@@ -6,7 +6,8 @@ function save_options() {
   updateMappingsFromFormData();
 
   chrome.storage.sync.set({
-    mappings: mappings // only save if both key and type are set
+    mappings: mappings,
+    dateFormat: document.getElementById('dateFormat').value || 'MM/DD/YYYY'
   }, function() {
     // Update status to let user know options were saved.
     var status = document.getElementById('status');
@@ -41,16 +42,18 @@ function updateMappingsFromFormData() {
     }
   }
 
-  mappings = data.filter(item => item.key && item.type);
+  mappings = data.filter(item => item.key && item.type); // only save if both key and type are set
 }
 
 // Restores select box and checkbox state using the preferences
 // stored in chrome.storage.
 function restore_options() {
   chrome.storage.sync.get({
-    mappings: [{}]
+    mappings: [{}],
+    dateFormat: 'MM/DD/YYYY'
   }, function(items) {
     mappings = items.mappings;
+    document.getElementById('dateFormat').value = items.dateFormat;
     loadMappings();
   });
 }

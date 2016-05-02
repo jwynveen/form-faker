@@ -1,4 +1,4 @@
-function processForm(userMappings) {
+function processForm(userMappings, options) {
   console.log('form-faker: faking data...');
   const dictionary = getDictionary();
   var inputs = document.getElementsByTagName('input');
@@ -55,6 +55,7 @@ function processForm(userMappings) {
         break;
       // Date
       case 'date-past':
+        const format = options && options.dateFormat ? options.dateFormat : 'MM/DD/YYYY';
         var date = faker.date.past(50);
         input.value = date.toLocaleDateString();
         break;
@@ -162,8 +163,12 @@ function getDictionary() {
 }
 
 chrome.storage.sync.get({
-  mappings: []
+  mappings: [],
+  dateFormat: 'MM/DD/YYYY'
 }, function(items) {
   const mapContent = items.mappings.map(mapping => [mapping.key, mapping.type]);
-  processForm(new Map(mapContent));
+  const options = {
+    dateFormat: items.dateFormat
+  };
+  processForm(new Map(mapContent), options);
 });
