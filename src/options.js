@@ -7,7 +7,8 @@ function save_options() {
 
   chrome.storage.sync.set({
     mappings: mappings,
-    dateFormat: document.getElementById('dateFormat').value || 'MM/DD/YYYY'
+    dateFormat: document.getElementById('dateFormat').value || 'MM/DD/YYYY',
+    emailPattern: document.getElementById('emailPattern').value
   }, function() {
     // Update status to let user know options were saved.
     var status = document.getElementById('status');
@@ -50,10 +51,12 @@ function updateMappingsFromFormData() {
 function restore_options() {
   chrome.storage.sync.get({
     mappings: [{}],
-    dateFormat: 'MM/DD/YYYY'
+    dateFormat: 'MM/DD/YYYY',
+    emailPattern: '',
   }, function(items) {
     mappings = items.mappings;
     document.getElementById('dateFormat').value = items.dateFormat;
+    document.getElementById('emailPattern').value = items.emailPattern;
     loadMappings();
   });
 }

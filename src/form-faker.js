@@ -30,7 +30,12 @@ function processForm(userMappings, options) {
         input.value = lastName;
         break;
       case 'email':
-        input.value = faker.internet.email(firstName, lastName);
+        if (options && options.emailPattern) {
+          var username = faker.internet.userName(firstName, lastName);
+          input.value = options.emailPattern.replace('{name}', username);
+        } else {
+          input.value = faker.internet.email(firstName, lastName);
+        }
         break;
       case 'phone':
         input.value = faker.phone.phoneNumber('(###) ###-####');
@@ -74,6 +79,42 @@ function processForm(userMappings, options) {
     }
   }
 
+  var selects = document.getElementsByTagName('select');
+  for (var i = 0; i < selects.length; i++) {
+    var select = selects[i];
+    var isChanged = false;
+    if (select.value) {
+      continue;
+    }
+
+    let mapping;
+    if (userMappings) {
+      mapping = getInputType(select, userMappings);
+    }
+    if (!mapping) {
+      mapping = getInputType(select, dictionary);
+    }
+    switch (mapping) {
+      case 'ignore':
+        break;
+      case 'gender':
+        for (const option of select.options) {
+          if (gender === 1 && ['male', 'm'].includes(option.value.toLowerCase()) ||
+            gender === 0 && ['female', 'f', 'fem'].includes(option.value.toLowerCase())) {
+            option.selected = true;
+            isChanged = true;
+            break;
+          }
+        }
+        break;
+    }
+
+    if (isChanged) {
+      var changeEvent = new Event('change');
+      select.dispatchEvent(changeEvent);
+    }
+  }
+
   console.log('form-faker: Done!');
 }
 
@@ -109,6 +150,9 @@ function getDictionary() {
     ['emailaddress', 'email'],
     ['email_address', 'email'],
     ['email-address', 'email'],
+    // Gender
+    ['gender', 'gender'],
+    ['sex', 'gender'],
     // Phone
     ['phone', 'phone'],
     ['ph', 'phone'],
@@ -168,11 +212,13 @@ function getDictionary() {
 
 chrome.storage.sync.get({
   mappings: [],
-  dateFormat: 'MM/DD/YYYY'
+  dateFormat: 'MM/DD/YYYY',
+  emailPattern: '',
 }, function(items) {
   const mapContent = items.mappings.map(mapping => [mapping.key, mapping.type]);
   const options = {
-    dateFormat: items.dateFormat
+    dateFormat: items.dateFormat,
+    emailPattern: items.emailPattern,
   };
   processForm(new Map(mapContent), options);
 });

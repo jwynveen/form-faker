@@ -1,3 +1,11 @@
+.form-group {
+  margin: 5px 0;
+}
+.form-group .help-text {
+  display: block;
+  color: #999;
+}
+
 .row label {
   display: inline-block;
   font-weight: bold;
