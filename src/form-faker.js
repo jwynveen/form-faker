@@ -3,6 +3,10 @@ function processForm(userMappings, options) {
   const dictionary = getDictionary();
   var inputs = document.getElementsByTagName('input');
 
+  const gender = faker.random.number(1);  // 0=female, 1=male; for faker's parameters (https://github.com/Marak/faker.js/blob/master/lib/name.js#L21)
+  const firstName = faker.name.firstName(gender);
+  const lastName = faker.name.lastName();
+
   for (var i = 0; i < inputs.length; i++) {
     var input = inputs[i];
     if (input.type.toLowerCase() !== 'text' || input.value) {
@@ -20,13 +24,13 @@ function processForm(userMappings, options) {
       case 'ignore':
         break;
       case 'firstName':
-        input.value = faker.name.firstName();
+        input.value = firstName;
         break;
       case 'lastName':
-        input.value = faker.name.lastName();
+        input.value = lastName;
         break;
       case 'email':
-        input.value = faker.internet.email();
+        input.value = faker.internet.email(firstName, lastName);
         break;
       case 'phone':
         input.value = faker.phone.phoneNumber('(###) ###-####');
