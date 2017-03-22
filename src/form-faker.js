@@ -22,7 +22,7 @@ function processForm(userMappings, options) {
     }
     switch (mapping) {
       case 'ignore':
-        break;
+        continue;
       case 'firstName':
         input.value = firstName;
         break;
@@ -77,6 +77,8 @@ function processForm(userMappings, options) {
         }
         break;
     }
+
+    input.dispatchEvent(new Event('change'));
   }
 
   var selects = document.getElementsByTagName('select');
