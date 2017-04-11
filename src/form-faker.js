@@ -34,11 +34,11 @@ function processForm(userMappings, options) {
           var username = faker.internet.userName(firstName, lastName);
           input.value = options.emailPattern.replace('{name}', username);
         } else {
-          input.value = faker.internet.email(firstName, lastName);
+          input.value = faker.internet.exampleEmail(firstName, lastName);
         }
         break;
       case 'phone':
-        input.value = faker.phone.phoneNumber('(###) ###-####');
+        input.value = faker.phone.phoneNumber('(###) 555-####');
         break;
       // Address
       case 'address1':
