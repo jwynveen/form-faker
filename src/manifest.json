@@ -24,7 +24,7 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["lib/faker.min.js"]
+      "js": ["lib/faker.min.js", "lib/marvel-characters.js", "lib/superheros.js"]
     }
   ],
   "browser_action": {

@@ -1,11 +1,33 @@
 function processForm(userMappings, options) {
   console.log('form-faker: faking data...');
+  options = options || {};
   const dictionary = getDictionary();
   var inputs = document.getElementsByTagName('input');
 
   const gender = faker.random.number(1);  // 0=female, 1=male; for faker's parameters (https://github.com/Marak/faker.js/blob/master/lib/name.js#L21)
-  const firstName = faker.name.firstName(gender);
-  const lastName = faker.name.lastName();
+  let firstName;
+  let lastName;
+  if (options.nameGenerator === 'marvel') {
+    const names = marvelCharacterNames[faker.random.number(marvelCharacterNames.length)].split(' ');
+    firstName = names.shift();
+    if (names.length) {
+      lastName = names.join(' ');
+    }
+  } else if (options.nameGenerator === 'superhero') {
+    const names = superheroNames[faker.random.number(superheroNames.length)].split(' ');
+    firstName = names.shift();
+    if (names.length) {
+      lastName = names.join(' ');
+    }
+  }
+
+  if (!firstName) {
+    firstName = faker.name.firstName(gender);
+  }
+
+  if (!lastName) {
+    lastName = faker.name.lastName();
+  }
 
   for (var i = 0; i < inputs.length; i++) {
     var input = inputs[i];
@@ -30,7 +52,7 @@ function processForm(userMappings, options) {
         input.value = lastName;
         break;
       case 'email':
-        if (options && options.emailPattern) {
+        if (options.emailPattern) {
           var username = faker.internet.userName(firstName, lastName);
           input.value = options.emailPattern.replace('{name}', username);
         } else {
@@ -216,11 +238,13 @@ chrome.storage.sync.get({
   mappings: [],
   dateFormat: 'MM/DD/YYYY',
   emailPattern: '',
+  nameGenerator: 'random',
 }, function(items) {
   const mapContent = items.mappings.map(mapping => [mapping.key, mapping.type]);
   const options = {
     dateFormat: items.dateFormat,
     emailPattern: items.emailPattern,
+    nameGenerator: items.nameGenerator,
   };
   processForm(new Map(mapContent), options);
 });
