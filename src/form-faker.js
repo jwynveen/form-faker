@@ -1,84 +1,37 @@
+chrome.runtime.onMessage.addListener(function (params) {
+  chrome.storage.sync.get({
+    mappings: [],
+    dateFormat: 'MM/DD/YYYY',
+    emailPattern: '',
+  }, function (items) {
+    const mapContent = items.mappings.map(mapping => [mapping.key, mapping.type]);
+    const options = {
+      dateFormat: items.dateFormat,
+      emailPattern: items.emailPattern,
+    };
+
+    if (params.trigger === 'contextMenu') {
+      processInput(document.activeElement, new Map(mapContent), getDictionary(), options)
+    } else {
+      processForm(new Map(mapContent), options);
+    }
+  });
+});
+
+
 function processForm(userMappings, options) {
   console.log('form-faker: faking data...');
   const dictionary = getDictionary();
   var inputs = document.getElementsByTagName('input');
 
-  const gender = faker.random.number(1);  // 0=female, 1=male; for faker's parameters (https://github.com/Marak/faker.js/blob/master/lib/name.js#L21)
-  const firstName = faker.name.firstName(gender);
-  const lastName = faker.name.lastName();
+  options.session = {
+    gender: faker.random.number(1),  // 0=female, 1=male; for faker's parameters (https://github.com/Marak/faker.js/blob/master/lib/name.js#L21)
+    firstName: faker.name.firstName(gender),
+    lastName: faker.name.lastName(),
+  }
 
   for (var i = 0; i < inputs.length; i++) {
-    var input = inputs[i];
-    if (input.type.toLowerCase() !== 'text' || input.value) {
-      continue;
-    }
-
-    let mapping;
-    if (userMappings) {
-      mapping = getInputType(input, userMappings);
-    }
-    if (!mapping) {
-      mapping = getInputType(input, dictionary);
-    }
-    switch (mapping) {
-      case 'ignore':
-        continue;
-      case 'firstName':
-        input.value = firstName;
-        break;
-      case 'lastName':
-        input.value = lastName;
-        break;
-      case 'email':
-        if (options && options.emailPattern) {
-          var username = faker.internet.userName(firstName, lastName);
-          input.value = options.emailPattern.replace('{name}', username);
-        } else {
-          input.value = faker.internet.exampleEmail(firstName, lastName);
-        }
-        break;
-      case 'phone':
-        input.value = faker.phone.phoneNumber('(###) 555-####');
-        break;
-      // Address
-      case 'address1':
-        input.value = faker.address.streetAddress();
-        break;
-      case 'address2':
-        input.value = faker.address.secondaryAddress();
-        break;
-      case 'city':
-        input.value = faker.address.city();
-        break;
-      case 'country':
-        input.value = 'United States'; // faker.address.country();
-        break;
-      case 'county':
-        input.value = faker.address.county();
-        break;
-      case 'state':
-        input.value = faker.address.stateAbbr();
-        break;
-      case 'zipCode':
-        input.value = faker.address.zipCode();
-        break;
-      // Date
-      case 'date-past':
-        const format = options && options.dateFormat ? options.dateFormat : 'MM/DD/YYYY';
-        var date = faker.date.past(50);
-        input.value = date.toLocaleDateString();
-        break;
-      case 'account':
-        input.value = faker.finance.account();
-        break;
-      default:
-        if (input.attributes.required) {
-          input.value = faker.random.word();
-        }
-        break;
-    }
-
-    input.dispatchEvent(new Event('change'));
+    processInput(inputs[i], userMappings, dictionary, options);
   }
 
   var selects = document.getElementsByTagName('select');
@@ -118,6 +71,83 @@ function processForm(userMappings, options) {
   }
 
   console.log('form-faker: Done!');
+}
+
+function processInput(input, userMappings, dictionary, options) {
+  if (input.type.toLowerCase() !== 'text' || input.value) {
+    return;
+  }
+
+  const gender = options.session ? options.session.gender : faker.random.number(1);
+  const firstName = options.session ? options.session.firstName : faker.name.firstName(gender);
+  const lastName = options.session ? options.session.lastName : faker.name.lastName();
+
+  let mapping;
+  if (userMappings) {
+    mapping = getInputType(input, userMappings);
+  }
+  if (!mapping) {
+    mapping = getInputType(input, dictionary);
+  }
+  switch (mapping) {
+    case 'ignore':
+      return;
+    case 'firstName':
+      input.value = firstName;
+      break;
+    case 'lastName':
+      input.value = lastName;
+      break;
+    case 'email':
+      if (options && options.emailPattern) {
+        var username = faker.internet.userName(firstName, lastName);
+        input.value = options.emailPattern.replace('{name}', username);
+      } else {
+        input.value = faker.internet.exampleEmail(firstName, lastName);
+      }
+      break;
+    case 'phone':
+      input.value = faker.phone.phoneNumber('(###) 555-####');
+      break;
+    // Address
+    case 'address1':
+      input.value = faker.address.streetAddress();
+      break;
+    case 'address2':
+      input.value = faker.address.secondaryAddress();
+      break;
+    case 'city':
+      input.value = faker.address.city();
+      break;
+    case 'country':
+      input.value = 'United States'; // faker.address.country();
+      break;
+    case 'county':
+      input.value = faker.address.county();
+      break;
+    case 'state':
+      input.value = faker.address.stateAbbr();
+      break;
+    case 'zipCode':
+      input.value = faker.address.zipCode();
+      break;
+    // Date
+    case 'date-past':
+      const format = options && options.dateFormat ? options.dateFormat : 'MM/DD/YYYY';
+      var date = faker.date.past(50);
+      input.value = date.toLocaleDateString();
+      break;
+    case 'account':
+      input.value = faker.finance.account();
+      break;
+    default:
+      if (input.attributes.required) {
+        input.value = faker.random.word();
+      }
+      break;
+  }
+
+  input.dispatchEvent(new Event('change'));
 }
 
 function getInputType(input, dictionary) {
@@ -211,16 +241,3 @@ function getDictionary() {
     ['mrn', 'account'],
   ]);
 }
-
-chrome.storage.sync.get({
-  mappings: [],
-  dateFormat: 'MM/DD/YYYY',
-  emailPattern: '',
-}, function(items) {
-  const mapContent = items.mappings.map(mapping => [mapping.key, mapping.type]);
-  const options = {
-    dateFormat: items.dateFormat,
-    emailPattern: items.emailPattern,
-  };
-  processForm(new Map(mapContent), options);
-});

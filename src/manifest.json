@@ -13,7 +13,8 @@
 
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "contextMenus"
   ],
   "background": {
     "scripts": [
@@ -24,7 +25,7 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["lib/faker.min.js"]
+      "js": ["lib/faker.min.js", "form-faker.js"]
     }
   ],
   "browser_action": {
