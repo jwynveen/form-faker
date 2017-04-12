@@ -38,7 +38,7 @@ function processForm(userMappings, options) {
         }
         break;
       case 'phone':
-        input.value = faker.phone.phoneNumber('(###) 555-####');
+        input.value = faker.phone.phoneNumber('(###) 555-01##');
         break;
       // Address
       case 'address1':
