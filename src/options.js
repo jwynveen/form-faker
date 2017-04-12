@@ -9,7 +9,7 @@ function save_options() {
     mappings: mappings,
     dateFormat: document.getElementById('dateFormat').value || 'MM/DD/YYYY',
     emailPattern: document.getElementById('emailPattern').value,
-    nameGenerator: document.querySelector('input[name="nameGenerator"]:checked').value,
+    nameGenerator: document.getElementById('nameGenerator').value,
   }, function() {
     // Update status to let user know options were saved.
     var status = document.getElementById('status');
@@ -54,21 +54,12 @@ function restore_options() {
     mappings: [{}],
     dateFormat: 'MM/DD/YYYY',
     emailPattern: '',
+    nameGenerator: 'random',
   }, function(items) {
     mappings = items.mappings;
     document.getElementById('dateFormat').value = items.dateFormat;
     document.getElementById('emailPattern').value = items.emailPattern;
-    switch (items.nameGenerator) {
-      case 'marvel':
-        document.getElementById('nameGenerator-marvel').checked = true;
-        break;
-      case 'superhero':
-        document.getElementById('nameGenerator-superhero').checked = true;
-        break;
-      default:
-        document.getElementById('nameGenerator-random').checked = true;
-        break;
-    }
+    document.getElementById('nameGenerator').value = items.nameGenerator;
     loadMappings();
   });
 }
