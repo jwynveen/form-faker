@@ -25,7 +25,9 @@ build/Release
 
 # Dependency directory
 node_modules
-src/lib
+src/lib/*
+!src/lib/marvel-characters.js
+!src/lib/superheros.js
 src/fonts
 
 # Optional npm cache directory

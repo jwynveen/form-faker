@@ -5,7 +5,7 @@
   "main": "form-faker.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "mkdir src/lib && cp node_modules/faker/build/build/faker.min.js node_modules/handlebars/dist/handlebars.min.js node_modules/font-awesome/css/font-awesome.min.css node_modules/moment/min/moment.min.js marvel-characters.js superheros.js src/lib/ && cp -r node_modules/font-awesome/fonts src/fonts"
+    "postinstall": "mkdir -p src/lib && cp node_modules/faker/build/build/faker.min.js node_modules/handlebars/dist/handlebars.min.js node_modules/font-awesome/css/font-awesome.min.css node_modules/moment/min/moment.min.js src/lib/ && cp -r node_modules/font-awesome/fonts src/fonts"
   },
   "repository": {
     "type": "git",
