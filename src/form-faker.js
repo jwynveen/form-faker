@@ -8,15 +8,13 @@ function processForm(userMappings, options) {
   let firstName;
   let lastName;
   if (options.nameGenerator === 'marvel') {
-    const names = marvelCharacterNames[faker.random.number(1252)].split(' ');
+    const names = marvelCharacterNames[faker.random.number(marvelCharacterNames.length)].split(' ');
     firstName = names.shift();
     if (names.length) {
       lastName = names.join(' ');
     }
-  }
-
-  if (options.nameGenerator === 'superhero') {
-    const names = superheroNames[faker.random.number(2537)].split(' ');
+  } else if (options.nameGenerator === 'superhero') {
+    const names = superheroNames[faker.random.number(superheroNames.length)].split(' ');
     firstName = names.shift();
     if (names.length) {
       lastName = names.join(' ');
