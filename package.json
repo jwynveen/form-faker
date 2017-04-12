@@ -1,6 +1,6 @@
 {
   "name": "form-faker",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Chrome extension to fill in common form fields with data from the faker library",
   "main": "form-faker.js",
   "scripts": {
