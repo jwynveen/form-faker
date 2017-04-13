@@ -1,42 +1,74 @@
+chrome.runtime.onMessage.addListener(function (params) {
+  chrome.storage.sync.get({
+    mappings: [],
+    dateFormat: 'MM/DD/YYYY',
+    emailPattern: '',
+    nameGenerator: 'random',
+  }, function (items) {
+    const mapContent = items.mappings.map(mapping => [mapping.key, mapping.type]);
+    const options = {
+      dateFormat: items.dateFormat,
+      emailPattern: items.emailPattern,
+      nameGenerator: items.nameGenerator,
+    };
+
+    if (params.trigger === 'contextMenu') {
+      processInput(document.activeElement, new Map(mapContent), getDictionary(), options, params.dataType);
+    } else {
+      processForm(new Map(mapContent), options);
+    }
+  });
+});
+
+
 function processForm(userMappings, options) {
   console.log('form-faker: faking data...');
   options = options || {};
   const dictionary = getDictionary();
   var inputs = document.getElementsByTagName('input');
 
-  const gender = faker.random.number(1);  // 0=female, 1=male; for faker's parameters (https://github.com/Marak/faker.js/blob/master/lib/name.js#L21)
-  let firstName;
-  let lastName;
+  options.session = {
+    gender: faker.random.number(1),  // 0=female, 1=male; for faker's parameters (https://github.com/Marak/faker.js/blob/master/lib/name.js#L21)
+    firstName: faker.name.firstName(gender),
+    lastName: faker.name.lastName(),
+  }
   if (options.nameGenerator === 'marvel') {
     const names = marvelCharacterNames[faker.random.number(marvelCharacterNames.length)].split(' ');
-    firstName = names.shift();
+    options.session.firstName = names.shift();
     if (names.length) {
-      lastName = names.join(' ');
+      options.session.lastName = names.join(' ');
     }
   } else if (options.nameGenerator === 'superhero') {
     const names = superheroNames[faker.random.number(superheroNames.length)].split(' ');
-    firstName = names.shift();
+    options.session.firstName = names.shift();
     if (names.length) {
-      lastName = names.join(' ');
+      options.session.lastName = names.join(' ');
     }
-  }
-
-  if (!firstName) {
-    firstName = faker.name.firstName(gender);
-  }
-
-  if (!lastName) {
-    lastName = faker.name.lastName();
   }
 
   for (var i = 0; i < inputs.length; i++) {
-    var input = inputs[i];
+    processInput(inputs[i], userMappings, dictionary, options);
+  }
+
+  var selects = document.getElementsByTagName('select');
+  for (var i = 0; i < selects.length; i++) {
+    processDropdown(selects[i], userMappings, dictionary, options);
+  }
+
+  console.log('form-faker: Done!');
+}
+
+function processInput(input, userMappings, dictionary, options, dataType) {
     if (input.type.toLowerCase() !== 'text' || input.value) {
-      continue;
+    return;
     }
 
-    let mapping;
-    if (userMappings) {
+  const gender = options.session ? options.session.gender : faker.random.number(1);
+  const firstName = options.session ? options.session.firstName : faker.name.firstName(gender);
+  const lastName = options.session ? options.session.lastName : faker.name.lastName();
+
+    let mapping = dataType;
+    if (!mapping && userMappings) {
       mapping = getInputType(input, userMappings);
     }
     if (!mapping) {
@@ -44,7 +76,7 @@ function processForm(userMappings, options) {
     }
     switch (mapping) {
       case 'ignore':
-        continue;
+      return;
       case 'firstName':
         input.value = firstName;
         break;
@@ -93,6 +125,15 @@ function processForm(userMappings, options) {
       case 'account':
         input.value = faker.finance.account();
         break;
+      case 'loremWord':
+        input.value = faker.lorem.word();
+        break;
+      case 'loremSentence':
+        input.value = faker.lorem.sentence();
+        break;
+      case 'loremParagraph':
+        input.value = faker.lorem.paragraph();
+        break;
       default:
         if (input.attributes.required) {
           input.value = faker.random.word();
@@ -101,47 +142,46 @@ function processForm(userMappings, options) {
     }
 
     input.dispatchEvent(new Event('change'));
+}
+function processDropdown(select, userMappings, dictionary, options, dataType) {
+  var isChanged = false;
+  if (select.value) {
+    return;
   }
 
-  var selects = document.getElementsByTagName('select');
-  for (var i = 0; i < selects.length; i++) {
-    var select = selects[i];
-    var isChanged = false;
-    if (select.value) {
-      continue;
-    }
-
-    let mapping;
-    if (userMappings) {
-      mapping = getInputType(select, userMappings);
-    }
-    if (!mapping) {
-      mapping = getInputType(select, dictionary);
-    }
-    switch (mapping) {
-      case 'ignore':
-        break;
-      case 'gender':
-        for (const option of select.options) {
-          if (gender === 1 && ['male', 'm'].includes(option.value.toLowerCase()) ||
-            gender === 0 && ['female', 'f', 'fem'].includes(option.value.toLowerCase())) {
-            option.selected = true;
-            isChanged = true;
-            break;
-          }
+  let mapping = dataType;
+  if (!mapping && userMappings) {
+    mapping = getInputType(select, userMappings);
+  }
+  if (!mapping) {
+    mapping = getInputType(select, dictionary);
+  }
+  switch (mapping) {
+    case 'ignore':
+      break;
+    case 'gender':
+      for (const option of select.options) {
+        if (options.session.gender === 1 && ['male', 'm'].includes(option.value.toLowerCase()) ||
+          options.session.gender === 0 && ['female', 'f', 'fem'].includes(option.value.toLowerCase())) {
+          option.selected = true;
+          isChanged = true;
+          break;
         }
-        break;
-    }
-
-    if (isChanged) {
-      var changeEvent = new Event('change');
-      select.dispatchEvent(changeEvent);
-    }
+      }
+      break;
   }
 
-  console.log('form-faker: Done!');
+  if (isChanged) {
+    var changeEvent = new Event('change');
+    select.dispatchEvent(changeEvent);
+  }
 }
 
+/**
+ * Use input name or classes to determine data type mapping
+ * @param input
+ * @param dictionary
+ */
 function getInputType(input, dictionary) {
   const name = input.name.toLowerCase();
   let mapping = dictionary.get(name);
@@ -157,6 +197,10 @@ function getInputType(input, dictionary) {
   return mapping;
 }
 
+/**
+ * Get map of names/classes and their associated data type
+ * @returns {Map}
+ */
 function getDictionary() {
   return new Map([
     // First Name
@@ -233,18 +277,3 @@ function getDictionary() {
     ['mrn', 'account'],
   ]);
 }
-
-chrome.storage.sync.get({
-  mappings: [],
-  dateFormat: 'MM/DD/YYYY',
-  emailPattern: '',
-  nameGenerator: 'random',
-}, function(items) {
-  const mapContent = items.mappings.map(mapping => [mapping.key, mapping.type]);
-  const options = {
-    dateFormat: items.dateFormat,
-    emailPattern: items.emailPattern,
-    nameGenerator: items.nameGenerator,
-  };
-  processForm(new Map(mapContent), options);
-});
