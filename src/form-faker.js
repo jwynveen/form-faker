@@ -59,89 +59,90 @@ function processForm(userMappings, options) {
 }
 
 function processInput(input, userMappings, dictionary, options, dataType) {
-    if (input.type.toLowerCase() !== 'text' || input.value) {
+  const inputType = (input.type || '').toLowerCase();
+  if (!['text', 'textarea'].includes(inputType) || input.value) {
     return;
-    }
+  }
 
   const gender = options.session ? options.session.gender : faker.random.number(1);
   const firstName = options.session ? options.session.firstName : faker.name.firstName(gender);
   const lastName = options.session ? options.session.lastName : faker.name.lastName();
 
-    let mapping = dataType;
-    if (!mapping && userMappings) {
-      mapping = getInputType(input, userMappings);
-    }
-    if (!mapping) {
-      mapping = getInputType(input, dictionary);
-    }
-    switch (mapping) {
-      case 'ignore':
+  let mapping = dataType;
+  if (!mapping && userMappings) {
+    mapping = getInputType(input, userMappings);
+  }
+  if (!mapping) {
+    mapping = getInputType(input, dictionary);
+  }
+  switch (mapping) {
+    case 'ignore':
       return;
-      case 'firstName':
-        input.value = firstName;
-        break;
-      case 'lastName':
-        input.value = lastName;
-        break;
-      case 'email':
-        if (options.emailPattern) {
-          var username = faker.internet.userName(firstName, lastName);
-          input.value = options.emailPattern.replace('{name}', username);
-        } else {
-          input.value = faker.internet.exampleEmail(firstName, lastName);
-        }
-        break;
-      case 'phone':
-        input.value = faker.phone.phoneNumber('(###) 555-01##');
-        break;
-      // Address
-      case 'address1':
-        input.value = faker.address.streetAddress();
-        break;
-      case 'address2':
-        input.value = faker.address.secondaryAddress();
-        break;
-      case 'city':
-        input.value = faker.address.city();
-        break;
-      case 'country':
-        input.value = 'United States'; // faker.address.country();
-        break;
-      case 'county':
-        input.value = faker.address.county();
-        break;
-      case 'state':
-        input.value = faker.address.stateAbbr();
-        break;
-      case 'zipCode':
-        input.value = faker.address.zipCode();
-        break;
-      // Date
-      case 'date-past':
-        const format = options && options.dateFormat ? options.dateFormat : 'MM/DD/YYYY';
-        var date = faker.date.past(50);
-        input.value = date.toLocaleDateString();
-        break;
-      case 'account':
-        input.value = faker.finance.account();
-        break;
-      case 'loremWord':
-        input.value = faker.lorem.word();
-        break;
-      case 'loremSentence':
-        input.value = faker.lorem.sentence();
-        break;
-      case 'loremParagraph':
-        input.value = faker.lorem.paragraph();
-        break;
-      default:
-        if (input.attributes.required) {
-          input.value = faker.random.word();
-        }
-        break;
-    }
+    case 'firstName':
+      input.value = firstName;
+      break;
+    case 'lastName':
+      input.value = lastName;
+      break;
+    case 'email':
+      if (options.emailPattern) {
+        var username = faker.internet.userName(firstName, lastName);
+        input.value = options.emailPattern.replace('{name}', username);
+      } else {
+        input.value = faker.internet.exampleEmail(firstName, lastName);
+      }
+      break;
+    case 'phone':
+      input.value = faker.phone.phoneNumber('(###) 555-01##');
+      break;
+    // Address
+    case 'address1':
+      input.value = faker.address.streetAddress();
+      break;
+    case 'address2':
+      input.value = faker.address.secondaryAddress();
+      break;
+    case 'city':
+      input.value = faker.address.city();
+      break;
+    case 'country':
+      input.value = 'United States'; // faker.address.country();
+      break;
+    case 'county':
+      input.value = faker.address.county();
+      break;
+    case 'state':
+      input.value = faker.address.stateAbbr();
+      break;
+    case 'zipCode':
+      input.value = faker.address.zipCode();
+      break;
+    // Date
+    case 'date-past':
+      const format = options && options.dateFormat ? options.dateFormat : 'MM/DD/YYYY';
+      var date = faker.date.past(50);
+      input.value = date.toLocaleDateString();
+      break;
+    case 'account':
+      input.value = faker.finance.account();
+      break;
+    case 'loremWord':
+      input.value = faker.lorem.word();
+      break;
+    case 'loremSentence':
+      input.value = faker.lorem.sentence();
+      break;
+    case 'loremParagraph':
+      input.value = faker.lorem.paragraph();
+      break;
+    default:
+      if (input.attributes.required) {
+        input.value = faker.random.word();
+      }
+      break;
+  }
 
-    input.dispatchEvent(new Event('change'));
+  input.dispatchEvent(new Event('change'));
 }
 function processDropdown(select, userMappings, dictionary, options, dataType) {
   var isChanged = false;
