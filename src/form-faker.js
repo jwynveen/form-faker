@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(function (params) {
     };
 
     if (params.trigger === 'contextMenu') {
-      processInput(document.activeElement, new Map(mapContent), getDictionary(), options)
+      processInput(document.activeElement, new Map(mapContent), getDictionary(), options, params.dataType);
     } else {
       processForm(new Map(mapContent), options);
     }
@@ -52,44 +52,13 @@ function processForm(userMappings, options) {
 
   var selects = document.getElementsByTagName('select');
   for (var i = 0; i < selects.length; i++) {
-    var select = selects[i];
-    var isChanged = false;
-    if (select.value) {
-      continue;
-    }
-
-    let mapping;
-    if (userMappings) {
-      mapping = getInputType(select, userMappings);
-    }
-    if (!mapping) {
-      mapping = getInputType(select, dictionary);
-    }
-    switch (mapping) {
-      case 'ignore':
-        break;
-      case 'gender':
-        for (const option of select.options) {
-          if (gender === 1 && ['male', 'm'].includes(option.value.toLowerCase()) ||
-            gender === 0 && ['female', 'f', 'fem'].includes(option.value.toLowerCase())) {
-            option.selected = true;
-            isChanged = true;
-            break;
-          }
-        }
-        break;
-    }
-
-    if (isChanged) {
-      var changeEvent = new Event('change');
-      select.dispatchEvent(changeEvent);
-    }
+    processDropdown(selects[i], userMappings, dictionary, options);
   }
 
   console.log('form-faker: Done!');
 }
 
-function processInput(input, userMappings, dictionary, options) {
+function processInput(input, userMappings, dictionary, options, dataType) {
     if (input.type.toLowerCase() !== 'text' || input.value) {
     return;
     }
@@ -98,8 +67,8 @@ function processInput(input, userMappings, dictionary, options) {
   const firstName = options.session ? options.session.firstName : faker.name.firstName(gender);
   const lastName = options.session ? options.session.lastName : faker.name.lastName();
 
-    let mapping;
-    if (userMappings) {
+    let mapping = dataType;
+    if (!mapping && userMappings) {
       mapping = getInputType(input, userMappings);
     }
     if (!mapping) {
@@ -156,6 +125,15 @@ function processInput(input, userMappings, dictionary, options) {
       case 'account':
         input.value = faker.finance.account();
         break;
+      case 'loremWord':
+        input.value = faker.lorem.word();
+        break;
+      case 'loremSentence':
+        input.value = faker.lorem.sentence();
+        break;
+      case 'loremParagraph':
+        input.value = faker.lorem.paragraph();
+        break;
       default:
         if (input.attributes.required) {
           input.value = faker.random.word();
@@ -165,7 +143,45 @@ function processInput(input, userMappings, dictionary, options) {
 
     input.dispatchEvent(new Event('change'));
 }
+function processDropdown(select, userMappings, dictionary, options, dataType) {
+  var isChanged = false;
+  if (select.value) {
+    return;
+  }
 
+  let mapping = dataType;
+  if (!mapping && userMappings) {
+    mapping = getInputType(select, userMappings);
+  }
+  if (!mapping) {
+    mapping = getInputType(select, dictionary);
+  }
+  switch (mapping) {
+    case 'ignore':
+      break;
+    case 'gender':
+      for (const option of select.options) {
+        if (options.session.gender === 1 && ['male', 'm'].includes(option.value.toLowerCase()) ||
+          options.session.gender === 0 && ['female', 'f', 'fem'].includes(option.value.toLowerCase())) {
+          option.selected = true;
+          isChanged = true;
+          break;
+        }
+      }
+      break;
+  }
+
+  if (isChanged) {
+    var changeEvent = new Event('change');
+    select.dispatchEvent(changeEvent);
+  }
+}
+
+/**
+ * Use input name or classes to determine data type mapping
+ * @param input
+ * @param dictionary
+ */
 function getInputType(input, dictionary) {
   const name = input.name.toLowerCase();
   let mapping = dictionary.get(name);
@@ -181,6 +197,10 @@ function getInputType(input, dictionary) {
   return mapping;
 }
 
+/**
+ * Get map of names/classes and their associated data type
+ * @returns {Map}
+ */
 function getDictionary() {
   return new Map([
     // First Name
