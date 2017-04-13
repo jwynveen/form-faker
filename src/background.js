@@ -1,40 +1,44 @@
-function loadScripts(tab) {
+function loadScripts(tab, next) {
   chrome.tabs.executeScript(tab.id, {
-    file: 'lib/marvel-characters.js'
-  });
-  chrome.tabs.executeScript(tab.id, {
-    file: 'lib/superheros.js'
-  });
-  chrome.tabs.executeScript(tab.id, {
-    file: 'form-faker.js'
+    file: 'lib/faker.min.js'
+  }, function () {
+    chrome.tabs.executeScript(tab.id, {
+      file: 'lib/marvel-characters.js'
+    });
+    chrome.tabs.executeScript(tab.id, {
+      file: 'lib/superheros.js'
+    });
+    chrome.tabs.executeScript(tab.id, {
+      file: 'form-faker.js'
+    }, next);
   });
 }
 
 // Trigger filling of entire from from clicking extension button
 chrome.browserAction.onClicked.addListener(function(tab) {
   // Inject scripts only once extension button is clicked
-  loadScripts(tab);
-
-  chrome.tabs.sendMessage(tab.id, {trigger: 'browserAction'});
+  loadScripts(tab, function () {
+    chrome.tabs.sendMessage(tab.id, {trigger: 'browserAction'});
+  });
 });
 
 // Trigger individual input filling from context menu
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
   // Inject scripts only once context menu is clicked
-  loadScripts(tab);
-
-  if (info.menuItemId.startsWith('fillData')) {
-    const dataType = info.menuItemId.replace('fillData-', '');
-    chrome.tabs.sendMessage(tab.id, {
-      trigger: 'contextMenu',
-      dataType,
-    });
-  } else {
-    console.log("item " + info.menuItemId + " was clicked");
-    console.log("info: " + JSON.stringify(info));
-    console.log("tab: " + JSON.stringify(tab));
-    console.log(info);
-  }
+  loadScripts(tab, function () {
+    if (info.menuItemId.startsWith('fillData')) {
+      const dataType = info.menuItemId.replace('fillData-', '');
+      chrome.tabs.sendMessage(tab.id, {
+        trigger: 'contextMenu',
+        dataType,
+      });
+    } else {
+      console.log("item " + info.menuItemId + " was clicked");
+      console.log("info: " + JSON.stringify(info));
+      console.log("tab: " + JSON.stringify(tab));
+      console.log(info);
+    }
+  });
 });
 
 // Set up context menu tree at install time.
