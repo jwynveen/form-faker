@@ -27,8 +27,10 @@ function processForm(userMappings, options) {
   const dictionary = getDictionary();
   var inputs = document.getElementsByTagName('input');
 
+
+  const gender = faker.random.number(1); // 0=female, 1=male; for faker's parameters (https://github.com/Marak/faker.js/blob/master/lib/name.js#L21)
   options.session = {
-    gender: faker.random.number(1),  // 0=female, 1=male; for faker's parameters (https://github.com/Marak/faker.js/blob/master/lib/name.js#L21)
+    gender,
     firstName: faker.name.firstName(gender),
     lastName: faker.name.lastName(),
   }
